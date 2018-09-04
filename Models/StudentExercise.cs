@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -20,16 +21,18 @@ namespace nss.Data
                 `InstructorId` 	INTEGER NOT NULL,
                 FOREIGN KEY(`ExerciseId`) REFERENCES `Exercise`(`Id`),
                 FOREIGN KEY(`StudentId`) REFERENCES `Student`(`Id`),
-                FOREIGN KEY(`InstructorId`) REFERENCES `Instrutor`(`Id`)
+                FOREIGN KEY(`InstructorId`) REFERENCES `Instructor`(`Id`)
             )");
         }
         public static void Seed(SqliteConnection db)
         {
+
+            Console.WriteLine("SEED THE DATA PLS!");
             db.Execute($@"INSERT INTO StudentExercise
                 SELECT null, e.Id, s.Id, i.Id
                 FROM Student s, Exercise e, Instructor i
-                WHERE e.Name = 'Overly Excited'
-                AND s.SlackHandle = '@ryan.tanay'
+                WHERE e.Name = 'Cry in the Shower'
+                AND s.SlackHandle = '@April Watson'
                 AND i.SlackHandle = '@coach'
             ");
 
@@ -37,8 +40,8 @@ namespace nss.Data
             db.Execute($@"INSERT INTO StudentExercise
                 SELECT null, e.Id, s.Id, i.Id
                 FROM Student s, Exercise e, Instructor i
-                WHERE e.Name = 'Overly Excited'
-                AND s.SlackHandle = '@katerebekah'
+                WHERE e.Name = 'Stab Myself'
+                AND s.SlackHandle = '@Jenn'
                 AND i.SlackHandle = '@coach'
             ");
 
@@ -46,8 +49,8 @@ namespace nss.Data
             db.Execute($@"INSERT INTO StudentExercise
                 SELECT null, e.Id, s.Id, i.Id
                 FROM Student s, Exercise e, Instructor i
-                WHERE e.Name = 'ChickenMonkey'
-                AND s.SlackHandle = '@juanrod'
+                WHERE e.Name = 'Play in Traffic'
+                AND s.SlackHandle = '@Adam Wieckert'
                 AND i.SlackHandle = '@joes'
             ");
 
@@ -55,8 +58,8 @@ namespace nss.Data
             db.Execute($@"INSERT INTO StudentExercise
                 SELECT null, e.Id, s.Id, i.Id
                 FROM Student s, Exercise e, Instructor i
-                WHERE e.Name = 'Boy Bands & Vegetables'
-                AND s.SlackHandle = '@katerebekah'
+                WHERE e.Name = 'Jump Off Bridge'
+                AND s.SlackHandle = '@April Watson'
                 AND i.SlackHandle = '@jisie'
             ");
         }
