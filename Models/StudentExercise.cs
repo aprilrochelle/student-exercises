@@ -27,7 +27,6 @@ namespace nss.Data
         public static void Seed(SqliteConnection db)
         {
 
-            Console.WriteLine("SEED THE DATA PLS!");
             db.Execute($@"INSERT INTO StudentExercise
                 SELECT null, e.Id, s.Id, i.Id
                 FROM Student s, Exercise e, Instructor i

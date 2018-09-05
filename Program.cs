@@ -27,20 +27,20 @@ namespace nss
       DatabaseInterface.CheckStudentExerciseTable();
 
       List<Instructor> instructors = db.Query<Instructor>(@"SELECT * FROM Instructor").ToList();
-      Console.WriteLine("*******Instructors********");
-      instructors.ForEach(i => Console.WriteLine($"{i.FirstName} {i.LastName}"));
+      // Console.WriteLine("*******Instructors********");
+      // instructors.ForEach(i => Console.WriteLine($"{i.FirstName} {i.LastName}"));
 
       List<Exercise> exercises = db.Query<Exercise>(@"SELECT * FROM Exercise").ToList();
-      Console.WriteLine("*******Exercises********");
-      exercises.ForEach(e => Console.WriteLine($"{e.Name}"));
+      // Console.WriteLine("*******Exercises********");
+      // exercises.ForEach(e => Console.WriteLine($"{e.Name}"));
 
       List<Student> students = db.Query<Student>(@"SELECT * FROM Student").ToList();
-      Console.WriteLine("*******Students********");
-      students.ForEach(s => Console.WriteLine($"{s.FirstName} {s.LastName}"));
+      // Console.WriteLine("*******Students********");
+      // students.ForEach(s => Console.WriteLine($"{s.FirstName} {s.LastName}"));
 
       db.Query<Cohort>(@"SELECT * FROM Cohort")
-        .ToList()
-        .ForEach(i => Console.WriteLine($"{i.Name}"));
+        .ToList();
+        // .ForEach(i => Console.WriteLine($"{i.Name}"));
 
 
 
@@ -67,8 +67,8 @@ namespace nss
               instructor.Cohort = cohort;
               return instructor;
             })
-      .ToList()
-      .ForEach(i => Console.WriteLine($"{i.FirstName} {i.LastName} ({i.SlackHandle}) is coaching {i.Cohort.Name}"));
+      .ToList();
+      // .ForEach(i => Console.WriteLine($"{i.FirstName} {i.LastName} ({i.SlackHandle}) is coaching {i.Cohort.Name}"));
 
 
 
@@ -124,10 +124,10 @@ namespace nss
       /*
           Iterate the key/value pairs in the dictionary
        */
-      foreach (KeyValuePair<int, Cohort> cohort in report)
-      {
-        Console.WriteLine($"{cohort.Value.Name} has {cohort.Value.Instructors.Count} instructors.");
-      }
+      // foreach (KeyValuePair<int, Cohort> cohort in report)
+      // {
+      //   Console.WriteLine($"{cohort.Value.Name} has {cohort.Value.Instructors.Count} instructors.");
+      // }
 
 
 
@@ -166,7 +166,7 @@ namespace nss
         List<string> assignedExercises = new List<string>();
         student.Value.AssignedExercises.ForEach(e => assignedExercises.Add(e.Name));
 
-        Console.WriteLine($@"{student.Value.FirstName} {student.Value.LastName} is working on {String.Join(',', assignedExercises)}.");
+        // Console.WriteLine($@"{student.Value.FirstName} {student.Value.LastName} is working on {String.Join(',', assignedExercises)}.");
       }
 
 
@@ -219,7 +219,7 @@ namespace nss
         output.Append($"{student.Value.FirstName} {student.Value.LastName} ");
         output.Append($"in {student.Value.Cohort.Name} ");
         output.Append($"is working on {String.Join(',', assignedExercises)}.");
-        Console.WriteLine(output);
+        // Console.WriteLine(output);
       }
 
 
@@ -233,6 +233,7 @@ namespace nss
           5. List the students working on each exercise, include the
              student's cohort and the instructor who assigned the exercise
        */
+
 
       Dictionary<int, Cohort> cohortMembers = new Dictionary<int, Cohort>();
 
@@ -280,6 +281,7 @@ namespace nss
         Console.WriteLine($"{member.Value.Name} Students: {String.Join(", ", studentList)}");
 
       }
+
 
       // 5. List the students working on each exercise, include the
       //        student's cohort and the instructor who assigned the exercise
@@ -341,9 +343,55 @@ namespace nss
 
         foreach (string n in studentNames)
         {
-            Console.WriteLine(n);
+            // Console.WriteLine(n);
+        }
+      }
+
+
+            // Edit this exercise to exercises by student
+      Dictionary<int, Student> studentsExe = new Dictionary<int, Student>();
+
+      db.Query<Student, Exercise, StudentExercise, Student>(@"
+                SELECT
+                       s.Id,
+                       s.FirstName,
+                       s.LastName,
+                       s.SlackHandle,
+                       s.CohortId,
+                       e.Id,
+                       e.Name,
+                       e.Language,
+                       se.Id,
+                       se.StudentId,
+                       se.ExerciseId,
+                       se.InstructorId
+                FROM Student s
+                Join StudentExercise se on s.Id = se.StudentId
+                Join Exercise e on se.ExerciseId = e.Id
+            ", (student, exercise, studentexercise) =>
+            {
+              if (!studentsExe.ContainsKey(student.Id))
+              {
+                studentsExe[student.Id] = student;
+              }
+              studentsExe[student.Id].AssignedExercises.Add(exercise);
+              return student;
+            });
+
+      /*
+          Display the students and instructors for the cohorts
+       */
+      foreach (KeyValuePair<int, Student> st in studentsExe)
+      {
+          List<string> exList = new List<string>();
+          foreach (Exercise e in st.Value.AssignedExercises)
+          {
+              exList.Add(e.Name);
+          }
+
+          Console.WriteLine($"{st.Value.FirstName} {st.Value.LastName} is working on the following exercises: {String.Join(", ", exList)}");
+
         }
       }
     }
   }
-}
